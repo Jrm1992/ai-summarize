@@ -1,7 +1,18 @@
+import './App.css';
+import Demo from './components/Demo';
+import Hero from './components/Hero';
+
 export default function App() {
   return (
-    <div className="App">
-      <h1>Vite + React + TS</h1>
-    </div>
+    <main>
+      <div className='main'>
+        <div className='gradient' />
+      </div>
+
+      <div className='app'>
+        <Hero />
+        <Demo />
+      </div>
+    </main>
   )
 }
