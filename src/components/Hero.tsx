@@ -12,7 +12,7 @@ export default function Hero() {
 
       <button 
         type='button' 
-        onClick={() => window.open('https://github.com/abhishek-rajput/ai-summarize')} 
+        onClick={() => window.open('https://github.com/Jrm1992/ai-summarize')} 
         className="black_btn"
         >
           GitHub
@@ -24,7 +24,7 @@ export default function Hero() {
       <span className="blue_gradient">OpenAI GPT-4</span>
     </h1>
     <h2 className='desc'>
-      Simplify your reading with Summize, an open-source article summarizer that transforms long articles into clear and concise summaries
+      Simplify your reading with Ai-Summarize, an open-source article summarizer that transforms long articles into clear and concise summaries
     </h2>
   </header>
   )
