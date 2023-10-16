@@ -1,22 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { copy, linkIcon, loader, tick } from '../assets';
 import { useLazyGetSummaryQuery } from '../services/Article';
 
+type Article = {
+  url: string;
+  summary: string;
+};
+
 export default function Demo() {
-  const [article, setArticle] = useState({
+  const [article, setArticle] = useState<Article>({
     url: "",
     summary: "",
   });
-  const [allArticles, setAllArticles] = useState([]);
-  const [copied, setCopied] = useState("");
+  const [allArticles, setAllArticles] = useState<Article[]>([]);
+  const [copied, setCopied] = useState<string>("");
 
-  // RTK lazy query
-  const [getSummary, { error, isFetching }] = useLazyGetSummaryQuery();
+  const [getSummary, { error, isFetching }] =
+    useLazyGetSummaryQuery();
 
-  // Load data from localStorage on mount
   useEffect(() => {
-    const articlesFromLocalStorage = JSON.parse(
-      localStorage.getItem("articles")
+    const articlesFromLocalStorage: Article[] = JSON.parse(
+      localStorage.getItem("articles") || "[]"
     );
 
     if (articlesFromLocalStorage) {
@@ -24,43 +28,32 @@ export default function Demo() {
     }
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const existingArticle = allArticles.find(
-      (item) => item.url === article.url
-    );
+    const existingArticle = allArticles.find((item) => item.url === article.url);
 
     if (existingArticle) return setArticle(existingArticle);
 
     const { data } = await getSummary({ articleUrl: article.url });
     if (data?.summary) {
-      const newArticle = { ...article, summary: data.summary };
+      const newArticle: Article = { ...article, summary: data.summary };
       const updatedAllArticles = [newArticle, ...allArticles];
 
-      // update state and local storage
       setArticle(newArticle);
       setAllArticles(updatedAllArticles);
       localStorage.setItem("articles", JSON.stringify(updatedAllArticles));
     }
   };
 
-  // copy the url and toggle the icon for user feedback
-  const handleCopy = (copyUrl) => {
+  const handleCopy = (copyUrl: string) => {
     setCopied(copyUrl);
     navigator.clipboard.writeText(copyUrl);
-    setTimeout(() => setCopied(false), 3000);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.keyCode === 13) {
-      handleSubmit(e);
-    }
+    setTimeout(() => setCopied(""), 3000);
   };
 
   return (
     <section className='mt-16 w-full max-w-xl'>
-      {/* Search */}
       <div className='flex flex-col w-full gap-2'>
         <form
           className='relative flex justify-center items-center'
@@ -77,7 +70,6 @@ export default function Demo() {
             placeholder='Paste the article link'
             value={article.url}
             onChange={(e) => setArticle({ ...article, url: e.target.value })}
-            onKeyDown={handleKeyDown}
             required
             className='url_input peer' // When you need to style an element based on the state of a sibling element, mark the sibling with the peer class, and use peer-* modifiers to style the target element
           />
@@ -89,7 +81,6 @@ export default function Demo() {
           </button>
         </form>
 
-        {/* Browse History */}
         <div className='flex flex-col gap-1 max-h-60 overflow-y-auto'>
           {allArticles.reverse().map((item, index) => (
             <div
@@ -112,7 +103,6 @@ export default function Demo() {
         </div>
       </div>
 
-      {/* Display Result */}
       <div className='my-10 max-w-full flex justify-center items-center'>
         {isFetching ? (
           <img src={loader} alt='loader' className='w-20 h-20 object-contain' />
@@ -131,7 +121,7 @@ export default function Demo() {
                 Article <span className='blue_gradient'>Summary</span>
               </h2>
               <div className='summary_box'>
-                <p className='font-inter font-medium text-sm text-gray-700'>
+                <p className='font-inter font-medium text-sm leading-relaxed text-gray-700'>
                   {article.summary}
                 </p>
               </div>
